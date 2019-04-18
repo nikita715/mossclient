@@ -26,8 +26,6 @@ class MossClient(
         input.readLine()
     }
 
-    private var i = 1
-
     fun sendNamedFiles(files: List<NamedFile>): MossClient {
         files.forEach { file -> sendFile(file) }
         return this
@@ -38,12 +36,12 @@ class MossClient(
         output.flush()
     }
 
-    fun directoryBased(value: Boolean): MossClient {
+    fun directoryBased(value: Boolean = true): MossClient {
         sendCommand("directory", if (value) "1" else "0")
         return this
     }
 
-    fun experimental(value: Boolean): MossClient {
+    fun experimental(value: Boolean = true): MossClient {
         sendCommand("X", if (value) "1" else "0")
         return this
     }
@@ -58,9 +56,11 @@ class MossClient(
         return this
     }
 
+    private var fileIndex = 1
+
     fun sendFile(namedFile: NamedFile, isBase: Boolean = false) {
         val fileBytes = FileUtils.readFileToByteArray(namedFile.source)
-        val id = if (isBase) 0 else i++
+        val id = if (isBase) 0 else fileIndex++
         val fileInfo = "file $id $language ${fileBytes.size} ${namedFile.name}\n".toByteArray()
         output.write(fileInfo)
         output.write(fileBytes)
