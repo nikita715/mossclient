@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     ...
-    implementation 'com.github.nikita715:mossclient:1.0'
+    implementation 'com.github.nikita715:mossclient:1.1'
 }
 ```
 
