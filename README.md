@@ -31,7 +31,7 @@ or this in your pom.xml
     </dependency>
 </dependencies>
 ```
-3. Submit files for analysis
+3. Submit files for an analysis
 ```java
 List<File> bases = Arrays.asList(
         new File("path/to/basefile1"),
@@ -46,9 +46,9 @@ List<Pair<String, File>> solutions = Arrays.asList(
 
 String mossId = "12345678"
 
-MossClient mossClient = new MossClient(mossId, Language.JAVA);
-mossClient.submitFiles(bases, true);
-mossClient.submitNamedFiles(solutions);
+MossClient mossClient = new MossClient(mossId, Language.JAVA)
+    .submitFiles(bases, true)
+    .submitNamedFiles(solutions);
 String resultUrl = mossClient.getResult();
 ```
 4. Look at the analysis result by the `resultUrl`
