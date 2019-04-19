@@ -26,11 +26,6 @@ class MossClient(
         input.readLine()
     }
 
-    fun sendNamedFiles(files: List<NamedFile>): MossClient {
-        files.forEach { file -> sendFile(file) }
-        return this
-    }
-
     private fun sendCommand(command: String, value: String) {
         output.write("$command $value\n".toByteArray())
         output.flush()
@@ -58,19 +53,62 @@ class MossClient(
 
     private var fileIndex = 1
 
-    fun sendFile(namedFile: NamedFile, isBase: Boolean = false) {
-        val fileBytes = FileUtils.readFileToByteArray(namedFile.source)
-        val id = if (isBase) 0 else fileIndex++
-        val fileInfo = "file $id $language ${fileBytes.size} ${namedFile.name}\n".toByteArray()
-        output.write(fileInfo)
-        output.write(fileBytes)
+    @JvmOverloads
+    fun submitFile(file: File, isBase: Boolean = false): MossClient {
+        submitNamedFile(NamedFile(file.absolutePath, file), isBase)
+        return this
     }
 
-    fun sendFiles(files: List<File>): MossClient = sendNamedFiles(files.map { NamedFile(it.absolutePath, it) })
+    @JvmOverloads
+    fun submitNamedFile(namedFile: NamedFile<File>, isBase: Boolean = false): MossClient {
+        val fileBytes = FileUtils.readFileToByteArray(namedFile.source)
+        submitByteArrayFile(NamedFile(namedFile.name, fileBytes), isBase)
+        return this
+    }
 
-    fun sendBaseFiles(baseFiles: List<File>): MossClient {
-        baseFiles.forEach { file ->
-            sendFile(NamedFile(file.absolutePath, file), isBase = true)
+    @JvmOverloads
+    fun submitStringFile(namedFile: NamedFile<String>, isBase: Boolean = false): MossClient {
+        submitByteArrayFile(NamedFile(namedFile.name, namedFile.source.toByteArray()), isBase)
+        return this
+    }
+
+    @JvmOverloads
+    fun submitByteArrayFile(namedFile: NamedFile<ByteArray>, isBase: Boolean = false): MossClient {
+        val id = if (isBase) 0 else fileIndex++
+        val fileInfo = "file $id $language ${namedFile.source.size} ${namedFile.name}\n".toByteArray()
+        output.write(fileInfo)
+        output.write(namedFile.source)
+        return this
+    }
+
+    @JvmOverloads
+    fun submitFiles(files: List<File>, isBase: Boolean = false): MossClient {
+        files.forEach { file ->
+            submitFile(file, isBase)
+        }
+        return this
+    }
+
+    @JvmOverloads
+    fun submitNamedFiles(files: List<NamedFile<File>>, isBase: Boolean = false): MossClient {
+        files.forEach { file ->
+            submitNamedFile(file, isBase)
+        }
+        return this
+    }
+
+    @JvmOverloads
+    fun submitStringFiles(files: List<NamedFile<String>>, isBase: Boolean = false): MossClient {
+        files.forEach { file ->
+            submitStringFile(file, isBase)
+        }
+        return this
+    }
+
+    @JvmOverloads
+    fun submitByteArrayFiles(files: List<NamedFile<ByteArray>>, isBase: Boolean = false): MossClient {
+        files.forEach { file ->
+            submitByteArrayFile(file, isBase)
         }
         return this
     }

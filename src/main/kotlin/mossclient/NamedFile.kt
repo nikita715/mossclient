@@ -1,5 +1,3 @@
 package mossclient
 
-import java.io.File
-
-class NamedFile(val name: String, val source: File)
+class NamedFile<T>(val name: String, val source: T)
