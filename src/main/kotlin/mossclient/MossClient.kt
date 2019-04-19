@@ -31,11 +31,13 @@ class MossClient(
         output.flush()
     }
 
+    @JvmOverloads
     fun directoryBased(value: Boolean = true): MossClient {
         sendCommand("directory", if (value) "1" else "0")
         return this
     }
 
+    @JvmOverloads
     fun experimental(value: Boolean = true): MossClient {
         sendCommand("X", if (value) "1" else "0")
         return this

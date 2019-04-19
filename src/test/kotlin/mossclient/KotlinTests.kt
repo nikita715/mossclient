@@ -11,7 +11,7 @@ class KotlinTests {
     private val solutionDir = KotlinTests::class.java.classLoader.getResource("solutionfiles").file
 
     @Test
-    fun namedFileSubmission() {
+    fun bigUploadTest() {
         val bases: List<File> = (1..2).map { File("$baseDir/file$it.txt") }
         val files: List<Pair<String, File>> = (1..29).map { "student$it" to File("$solutionDir/file$it.txt") }
 
