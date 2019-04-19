@@ -30,14 +30,41 @@ open class KotlinTests {
     }
 
     @Test
-    fun tryToSubmitTwoTimes() {
-        val resultSize = MossClient(mossId, MossLanguage.JAVA)
+    fun testRawOptions() {
+        val client = MossClient(mossId, MossLanguage.JAVA)
             .submitFiles(bases, true)
             .submitNamedFiles(solutions)
-        println(resultSize.getResult())
+            .rawOptions("-x -m 123 -d -n 150 -c message")
+            .rawOptions("   -x -m 123    ")
+            .rawOptions(" -x   -m     12 ")
+            .rawOptions("")
+            .rawOptions("                ")
+            .rawOptions("      -c comment")
+
+        assertFailsWith<MossClientException>(
+            { client.rawOptions("-m -1") },
+            { client.rawOptions("-m 0") },
+            { client.rawOptions("-m abc") },
+            { client.rawOptions("-n -1") },
+            { client.rawOptions("-n 0") },
+            { client.rawOptions("-n abc") },
+            { client.rawOptions("qwerty") }
+        )
+
+        val resultUrl = client.getResult()
+        assertThat(resultUrl, startsWith("http://moss.stanford.edu/results/"))
+        println(resultUrl)
+    }
+
+    @Test
+    fun tryToSubmitTwoTimes() {
+        val client = MossClient(mossId, MossLanguage.JAVA)
+            .submitFiles(bases, true)
+            .submitNamedFiles(solutions)
+        println(client.getResult())
 
         assertFailsWith(MossClientException::class) {
-            resultSize.getResult()
+            client.getResult()
         }
     }
 
@@ -126,4 +153,11 @@ public class Range {
         println(resultUrl)
 
     }
+
+    inline fun <reified T : Throwable> assertFailsWith(vararg actions: () -> Unit) {
+        actions.forEach {
+            assertFailsWith(T::class, it)
+        }
+    }
+
 }

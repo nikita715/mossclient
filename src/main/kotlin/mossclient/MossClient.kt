@@ -43,7 +43,7 @@ class MossClient(
      */
     fun rawOptions(commands: String): MossClient {
         var index = 0
-        val separatedCommands = commands.split(" ")
+        val separatedCommands = commands.split(" ").filter { it.isNotEmpty() }
         while (index < separatedCommands.size) {
             val command: String = separatedCommands[index++]
             when (command) {
@@ -54,22 +54,30 @@ class MossClient(
                     sendCommand("X", "1")
                 }
                 "-m" -> {
-                    if (index >= separatedCommands.size) parsingException()
-                    sendCommand("maxmatches", separatedCommands[index++])
+                    val mValue = safeGetCommand(index++, separatedCommands)
+                    if (mValue.isNumberGreaterThanZero())
+                        sendCommand("maxmatches", mValue)
+                    else parsingException("Wrong m parameter.")
                 }
                 "-n" -> {
-                    if (index >= separatedCommands.size) parsingException()
-                    sendCommand("show", separatedCommands[index++])
+                    val nValue = safeGetCommand(index++, separatedCommands)
+                    if (nValue.isNumberGreaterThanZero())
+                        sendCommand("show", nValue)
+                    else parsingException("Wrong n parameter.")
                 }
                 "-c" -> {
-                    if (index >= separatedCommands.size) parsingException()
-                    reportComment = separatedCommands[index++]
+                    reportComment = safeGetCommand(index++, separatedCommands)
                 }
                 else -> parsingException()
             }
         }
         return this
     }
+
+    private fun String.isNumberGreaterThanZero() = (this.matches("^\\d+$".toRegex()) && this != "0")
+
+    private fun safeGetCommand(index: Int, separatedCommands: List<String>): String =
+        if (index < separatedCommands.size) separatedCommands[index] else parsingException()
 
     /**
      * The -d option
@@ -92,7 +100,7 @@ class MossClient(
     /**
      * The -m option
      */
-    fun maxMatches(value: Int): MossClient {
+    fun maxMatches(value: Long): MossClient {
         sendCommand("maxmatches", value.toString())
         return this
     }
@@ -109,7 +117,7 @@ class MossClient(
     /**
      * The -n option
      */
-    fun resultSize(value: Int): MossClient {
+    fun resultSize(value: Long): MossClient {
         sendCommand("show", value.toString())
         return this
     }
@@ -210,7 +218,8 @@ class MossClient(
 
     private fun terminatedException(): Nothing = throw MossClientException("The client is terminated.")
 
-    private fun parsingException(): Nothing = throw MossClientException("Unable to parse the commands.")
+    private fun parsingException(message: String = "Unable to parse the commands."): Nothing =
+        throw MossClientException(message)
 
     private fun readFileBytes(file: File): ByteArray = FileUtils.readFileToByteArray(file)
 
@@ -219,12 +228,16 @@ class MossClient(
      * @return link to the analysis result
      */
     fun getResult(): String {
-        assertActive()
-        output.write(("query 0 $reportComment\n").toByteArray())
-        val result = input.readLine()
-        output.write("end\n".toByteArray())
-        close()
-        return result
+        try {
+            assertActive()
+            output.write(("query 0 $reportComment\n").toByteArray())
+            val result = input.readLine()
+            output.write("end\n".toByteArray())
+            close()
+            return result
+        } catch (e: IllegalStateException) {
+            throw MossClientException("Moss failed with an exception.", e)
+        }
     }
 
     /**
