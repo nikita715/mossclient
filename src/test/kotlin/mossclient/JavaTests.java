@@ -1,5 +1,6 @@
 package mossclient;
 
+import kotlin.Pair;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,8 +19,8 @@ public class JavaTests {
     @Test
     public void t() {
         List<File> bases = Stream.of(1, 2).map(i -> new File(baseDir + "/file" + i + ".txt")).collect(Collectors.toList());
-        List<NamedFile<File>> solutions = Stream.iterate(1, i -> i + 1).limit(29)
-                .map(i -> new NamedFile<>("student" + i, new File(solutionDir + "/file" + i + ".txt"))).collect(Collectors.toList());
+        List<Pair<String, File>> solutions = Stream.iterate(1, i -> i + 1).limit(29)
+                .map(i -> new Pair<>("student" + i, new File(solutionDir + "/file" + i + ".txt"))).collect(Collectors.toList());
 
         String resultUrl = new MossClient(System.getenv("MOSS_ID"), Language.JAVA)
                 .submitFiles(bases, true).submitNamedFiles(solutions).getResult();

@@ -51,33 +51,35 @@ class MossClient(
         return this
     }
 
+    private fun readFileBytes(file: File): ByteArray = FileUtils.readFileToByteArray(file)
+
     private var fileIndex = 1
 
     @JvmOverloads
     fun submitFile(file: File, isBase: Boolean = false): MossClient {
-        submitNamedFile(NamedFile(file.absolutePath, file), isBase)
+        submitNamedFile(file.absolutePath to file, isBase)
+        submitByteArrayFile(Pair(file.absolutePath, readFileBytes(file)), isBase)
         return this
     }
 
     @JvmOverloads
-    fun submitNamedFile(namedFile: NamedFile<File>, isBase: Boolean = false): MossClient {
-        val fileBytes = FileUtils.readFileToByteArray(namedFile.source)
-        submitByteArrayFile(NamedFile(namedFile.name, fileBytes), isBase)
+    fun submitNamedFile(namedFile: Pair<String, File>, isBase: Boolean = false): MossClient {
+        submitByteArrayFile(Pair(namedFile.first, readFileBytes(namedFile.second)), isBase)
         return this
     }
 
     @JvmOverloads
-    fun submitStringFile(namedFile: NamedFile<String>, isBase: Boolean = false): MossClient {
-        submitByteArrayFile(NamedFile(namedFile.name, namedFile.source.toByteArray()), isBase)
+    fun submitStringFile(namedFile: Pair<String, String>, isBase: Boolean = false): MossClient {
+        submitByteArrayFile(Pair(namedFile.first, namedFile.second.toByteArray()), isBase)
         return this
     }
 
     @JvmOverloads
-    fun submitByteArrayFile(namedFile: NamedFile<ByteArray>, isBase: Boolean = false): MossClient {
+    fun submitByteArrayFile(namedFile: Pair<String, ByteArray>, isBase: Boolean = false): MossClient {
         val id = if (isBase) 0 else fileIndex++
-        val fileInfo = "file $id $language ${namedFile.source.size} ${namedFile.name}\n".toByteArray()
+        val fileInfo = "file $id $language ${namedFile.second.size} ${namedFile.first}\n".toByteArray()
         output.write(fileInfo)
-        output.write(namedFile.source)
+        output.write(namedFile.second)
         return this
     }
 
@@ -90,7 +92,7 @@ class MossClient(
     }
 
     @JvmOverloads
-    fun submitNamedFiles(files: List<NamedFile<File>>, isBase: Boolean = false): MossClient {
+    fun submitNamedFiles(files: List<Pair<String, File>>, isBase: Boolean = false): MossClient {
         files.forEach { file ->
             submitNamedFile(file, isBase)
         }
@@ -98,7 +100,7 @@ class MossClient(
     }
 
     @JvmOverloads
-    fun submitStringFiles(files: List<NamedFile<String>>, isBase: Boolean = false): MossClient {
+    fun submitStringFiles(files: List<Pair<String, String>>, isBase: Boolean = false): MossClient {
         files.forEach { file ->
             submitStringFile(file, isBase)
         }
@@ -106,7 +108,7 @@ class MossClient(
     }
 
     @JvmOverloads
-    fun submitByteArrayFiles(files: List<NamedFile<ByteArray>>, isBase: Boolean = false): MossClient {
+    fun submitByteArrayFiles(files: List<Pair<String, ByteArray>>, isBase: Boolean = false): MossClient {
         files.forEach { file ->
             submitByteArrayFile(file, isBase)
         }
