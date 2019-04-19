@@ -1,5 +1,7 @@
 package mossclient
 
+import org.hamcrest.CoreMatchers.startsWith
+import org.junit.Assert.assertThat
 import org.junit.Test
 import java.io.File
 
@@ -10,10 +12,14 @@ class Tests {
 
     @Test
     fun namedFileSubmission() {
-        val bases = (1..2).map { File("$baseDir/file$it.txt") }
-        val files = (1..29).map { NamedFile("student$it", File("$solutionDir/file$it.txt")) }
-        val message = MossClient(System.getenv("MOSS_ID"), Language.JAVA).sendBaseFiles(bases).sendNamedFiles(files)
+        val bases: List<File> = (1..2).map { File("$baseDir/file$it.txt") }
+        val files: List<NamedFile<File>> = (1..29).map { NamedFile("student$it", File("$solutionDir/file$it.txt")) }
+
+        val resultUrl =
+            MossClient(System.getenv("MOSS_ID"), Language.JAVA).submitFiles(bases, true).submitNamedFiles(files)
             .maxMatches(12).experimental(true).directoryBased(false).resultSize(15).getResult()
-        println(message)
+
+        assertThat(resultUrl, startsWith("http://moss.stanford.edu/results/"))
+        println(resultUrl)
     }
 }
