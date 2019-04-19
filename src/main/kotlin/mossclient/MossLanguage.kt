@@ -3,7 +3,7 @@ package mossclient
 /**
  * Name of a programming language
  */
-enum class Language {
+enum class MossLanguage {
     C,
     CPP,
     JAVA,
@@ -14,7 +14,7 @@ enum class Language {
     SCHEME,
     HASKELL,
     FORTRAN,
-    TEXT,
+    ASCII,
     VHDL,
     PERL,
     MATLAB,
@@ -37,7 +37,6 @@ enum class Language {
     fun ofMoss() =
         when (this) {
             CPP -> "cc"
-            TEXT -> "ascii"
             MIPS_ASSEMBLY -> "mips"
             A8086_ASSEMBLY -> "a8086"
             VISUAL_BASIC -> "vb"

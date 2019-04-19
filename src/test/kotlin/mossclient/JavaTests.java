@@ -17,6 +17,10 @@ public class JavaTests {
     private String baseDir = JavaTests.class.getClassLoader().getResource("basefiles").getFile();
     private String solutionDir = JavaTests.class.getClassLoader().getResource("solutionfiles").getFile();
 
+    private List<File> bases = Stream.of(1, 2).map(i -> new File(baseDir + "/file" + i + ".txt")).collect(Collectors.toList());
+    private List<Pair<String, File>> solutions = Stream.iterate(1, i -> i + 1).limit(29)
+            .map(i -> new Pair<>("student" + i, new File(solutionDir + "/file" + i + ".txt"))).collect(Collectors.toList());
+
     @Test
     public void smallUploadTest() {
         List<File> bases = Arrays.asList(
@@ -30,23 +34,20 @@ public class JavaTests {
                 new Pair<>("student3", new File(solutionDir + "/file3.txt"))
         );
 
-        MossClient mossClient = new MossClient(System.getenv("MOSS_ID"), Language.JAVA);
-        mossClient.submitFiles(bases, true);
-        mossClient.submitNamedFiles(solutions);
-        String resultUrl = mossClient.getResult();
-        long i = 762152578;
+        try (MossClient mossClient = new MossClient(System.getenv("MOSS_ID"), MossLanguage.JAVA)) {
+            mossClient.submitFiles(bases, true);
+            mossClient.submitNamedFiles(solutions);
+            String resultUrl = mossClient.getResult();
 
-        assertThat(resultUrl, startsWith("http://moss.stanford.edu/results/"));
-        System.out.println(resultUrl);
+            assertThat(resultUrl, startsWith("http://moss.stanford.edu/results/"));
+            System.out.println(resultUrl);
+        }
+
     }
 
     @Test
     public void bigUploadTest() {
-        List<File> bases = Stream.of(1, 2).map(i -> new File(baseDir + "/file" + i + ".txt")).collect(Collectors.toList());
-        List<Pair<String, File>> solutions = Stream.iterate(1, i -> i + 1).limit(29)
-                .map(i -> new Pair<>("student" + i, new File(solutionDir + "/file" + i + ".txt"))).collect(Collectors.toList());
-
-        String resultUrl = new MossClient(System.getenv("MOSS_ID"), Language.JAVA)
+        String resultUrl = new MossClient(System.getenv("MOSS_ID"), MossLanguage.JAVA)
                 .experimental().resultSize(5).maxMatches(10)
                 .submitFiles(bases, true).submitNamedFiles(solutions).getResult();
         assertThat(resultUrl, startsWith("http://moss.stanford.edu/results/"));
