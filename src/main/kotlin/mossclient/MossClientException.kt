@@ -3,4 +3,4 @@ package mossclient
 /**
  * Common moss client exception
  */
-class MossClientException(message: String) : RuntimeException(message)
+internal class MossClientException(message: String) : RuntimeException(message)

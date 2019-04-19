@@ -1,6 +1,6 @@
 package mossclient
 
-enum class MossClientStage {
+internal enum class MossClientStage {
     WAITING,
     TERMINATED
 }

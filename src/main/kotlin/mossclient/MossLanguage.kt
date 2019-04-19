@@ -34,7 +34,7 @@ enum class MossLanguage {
     /**
      * To moss name of the language
      */
-    fun ofMoss() =
+    internal fun ofMoss() =
         when (this) {
             CPP -> "cc"
             MIPS_ASSEMBLY -> "mips"
