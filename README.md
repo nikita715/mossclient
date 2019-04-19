@@ -46,4 +46,4 @@ String resultUrl = mossClient.getResult();
 
 <img src="https://github.com/nikita715/mossclient/blob/master/docs/MossScreenshot.jpg"/>
 
-Also look at the [examples](https://github.com/nikita715/mossclient/tree/master/src/test/kotlin/mossclient)
+More examples available [here](https://github.com/nikita715/mossclient/tree/master/src/test/kotlin/mossclient)
