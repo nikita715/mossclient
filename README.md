@@ -1,10 +1,12 @@
 # Mossclient
 
-This is a simple client for Moss plagiarism analyzer
+This is a simple client for [Moss](http://theory.stanford.edu/~aiken/moss/) plagiarism analyzer
 
 ## Usage
 
-Add this in your build.gradle
+1. Obtain the moss id by following the [Moss](http://theory.stanford.edu/~aiken/moss/) registration instructions. You will find the id in the middle of the submision script in your mailbox.
+
+2. Add this in your build.gradle
 
 ```
 repositories {
@@ -17,7 +19,7 @@ dependencies {
 }
 ```
 
-Client usage example
+3. Submit files for analysis
 ```
 List<File> bases = Arrays.asList(
         new File("path/to/basefile1"),
@@ -37,5 +39,9 @@ mossClient.submitFiles(bases, true);
 mossClient.submitNamedFiles(solutions);
 String resultUrl = mossClient.getResult();
 ```
+
+4. Look at the analysis result by the `resultUrl`
+
+<img src="https://github.com/nikita715/mossclient/blob/master/docs/MossScreenshot.jpg"/>
 
 Also look at the [examples](https://github.com/nikita715/mossclient/tree/master/src/test/kotlin/mossclient)
