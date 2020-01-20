@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/nikita715/mossclient.svg?branch=master)](https://travis-ci.com/nikita715/mossclient)
+[![Build Status](https://travis-ci.com/gitplag/mossclient.svg?branch=master)](https://travis-ci.com/gitplag/mossclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/53df0c7ed2014c1bb4d846b2403d02e3)](https://www.codacy.com/app/nikita715/mossclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nikita715/mossclient&amp;utm_campaign=Badge_Grade)
 # Mossclient
 Simple client for [Moss](http://theory.stanford.edu/~aiken/moss/). It can be used in Java or Kotlin applications.
